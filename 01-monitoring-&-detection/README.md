@@ -1,8 +1,8 @@
-# 🛡️ Endpoint Monitoring & Threat Detection 
+#  Endpoint Monitoring & Threat Detection 
 
 This module provides a proactive security layer by auditing system-level processes to identify "Living off the Land" (LotL) threats and unsigned binaries. 
 
-## 🚀 Overview
+##  Overview
 I engineered a cross-platform solution that bridges administrative PowerShell automation with a Python-based visualization layer. This tool allows security analysts to triage system health at a glance.
 
 ### 📊 Detection Dashboard
