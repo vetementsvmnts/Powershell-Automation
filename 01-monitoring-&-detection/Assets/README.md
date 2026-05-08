@@ -1,8 +1,8 @@
 # 🖼️ Technical Assets & Documentation
 
-This directory contains the visual telemetry and architectural breakdown for the **Endpoint Monitoring Suite**.
+This directory contains the visual telemetry and architectural breakdown for the **Endpoint Monitoring**.
 
-## 📊 Live Detection Dashboard
+##  Live Detection Dashboard
 ![Security Monitor](Security-Monitor.png)
 
 ---
@@ -30,4 +30,3 @@ A custom-built triage interface designed for rapid security analysis:
 | **Design Style** | Stealth Wealth / Technical Dark Mode |
 
 ---
-*Developed by Sterling Consulting | Security Initiative 2026*
