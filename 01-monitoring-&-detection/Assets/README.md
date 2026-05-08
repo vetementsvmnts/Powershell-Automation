@@ -1,4 +1,4 @@
-# 🖼️ Technical Assets & Documentation
+#  Technical Assets & Documentation
 
 This directory contains the visual telemetry and architectural breakdown for the **Endpoint Monitoring**.
 
