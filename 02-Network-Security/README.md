@@ -1,14 +1,14 @@
-# 🔐 Network Security Audit — PowerShell Automation
+#  Network Security Audit — PowerShell Automation
 
 > **Module:** Network Security | **Script:** `NetworkAudit.ps1`  
 > **Language:** PowerShell | **Environment:** Windows (VS Code + Integrated Terminal)  
-> **Project:** VAPT Security Audit Suite
+> 
 
 ---
 
 ## 📸 Live Scan Output
 
-![Network Audit](Network-Audit.png)
+![Network Audit](Assets/Network-Audit.png)
 
 > **What you're seeing:** `NetworkAudit.ps1` running a live network sweep across the `192.168.10.1–20` subnet. The script auto-detects the host machine's Wi-Fi IP (`192.168.10.153`), derives the subnet base, and pings each address with a 1-second timeout using `System.Net.NetworkInformation.Ping` — faster and more reliable than `Test-Connection`. It found **1 active host**, then immediately ran local security checks: Firewall status across all three profiles (Domain ✅, Private ✅, Public ✅) and confirmed RDP is **disabled** — a positive security posture indicator.
 
