@@ -1,57 +1,132 @@
-#   Network Security Powershell Automation
-A proactive network defence framework that combines PowerShell-based network auditing with a Python-driven threat visualization layer — built for security analysts who need actionable intelligence fast.
+# 🔐 Network Security Audit — PowerShell Automation
 
-## 📊 Security Dashboard
-![NetSentinel Dashboard](Assets/NetSentinel-Dashboard.png)
-
----
-
-## 🔍 Overview
-
-NetSentinel is a cross-platform network security automation suite designed to surface vulnerabilities, suspicious connections, and policy violations across your environment. It bridges low-level network interrogation (PowerShell) with a clean analyst-facing dashboard (Python), turning raw telemetry into prioritised, colour-coded threat intelligence.
+> **Module:** Network Security | **Script:** `NetworkAudit.ps1`  
+> **Language:** PowerShell | **Environment:** Windows (VS Code + Integrated Terminal)  
+> **Project:** VAPT Security Audit Suite
 
 ---
 
-## 🛠️ How it Works
+## 📸 Live Scan Output
 
-### 1. The Engine (PowerShell)
-- Enumerates all **active network connections** and maps them to owning processes via PID resolution.
-- Audits **open ports** against a configurable allowlist — flagging any unexpected listeners.
-- Interrogates **firewall rules** for misconfigurations, disabled policies, or shadow rules that bypass corporate baselines.
-- Performs **DNS anomaly detection** by cross-referencing resolved hostnames against known threat intelligence feeds.
-- Applies **heuristic scoring** to flag high-risk indicators: unusual outbound ports, connections to non-standard geolocations, or processes binding to `0.0.0.0` without authorisation.
-- Exports a structured `telemetry.json` feed and a timestamped `Network_Audit_Report.txt` for compliance and incident logging.
+![Network Audit](Network-Audit.png)
 
-### 2. The Dashboard (Python)
-- A custom **Tkinter GUI** that ingests the JSON telemetry feed in real time.
-- Displays **live connection stats**: active sessions, flagged anomalies, blocked ports, and clean processes.
-- Features a colour-coded triage system:
-  - 🔴 `RED` — High-risk: unknown processes, suspicious remote IPs, or policy violations
-  - 🟡 `AMBER` — Warn: elevated risk requiring analyst review
-  - 🟢 `GREEN` — Verified: known-good system processes and authorised connections
-- Includes an **export panel** for one-click incident report generation.
+> **What you're seeing:** `NetworkAudit.ps1` running a live network sweep across the `192.168.10.1–20` subnet. The script auto-detects the host machine's Wi-Fi IP (`192.168.10.153`), derives the subnet base, and pings each address with a 1-second timeout using `System.Net.NetworkInformation.Ping` — faster and more reliable than `Test-Connection`. It found **1 active host**, then immediately ran local security checks: Firewall status across all three profiles (Domain ✅, Private ✅, Public ✅) and confirmed RDP is **disabled** — a positive security posture indicator.
 
 ---
 
-## 🧰 Technical Stack
+## 📌 Overview
 
-| Component | Technology |
-|-----------|-----------|
-| Network Auditing | PowerShell (NetTCPIP, NetSecurity, WMI) |
-| Threat Visualization | Python 3.x (Tkinter, Threading) |
-| Telemetry Format | JSON (structured bridge layer) |
-| Compliance Output | `.txt` timestamped audit logs |
-| UI Design | Dark-mode, high-contrast analyst interface |
+`NetworkAudit.ps1` is a lightweight but powerful PowerShell automation script that performs **host discovery and local security hardening checks** in a single pass. It is designed for rapid network triage — ideal for the reconnaissance and posture-assessment phases of a VAPT engagement.
+
+No third-party tools required. Pure PowerShell, native Windows APIs.
 
 ---
 
+## ⚙️ What the Script Does
+
+### 1. 🌐 Auto-Detects Your Network
+- Retrieves the active **Wi-Fi IP address** from the network adapter
+- Extracts the **subnet base** (e.g. `192.168.10.`) dynamically via string manipulation — no hardcoded ranges
+
+### 2. 🔎 Host Discovery Sweep
+- Iterates through `.1` to `.20` of the detected subnet
+- Uses `System.Net.NetworkInformation.Ping` with a **1000ms timeout** for fast, non-blocking checks
+- Colour-coded output: `UP` in **Green**, `down` in **DarkGray**
+- Counts and reports total **active hosts found**
+
+### 3. 🛡️ Local Security Posture Checks
+After the sweep, the script audits the **local machine's security configuration**:
+
+| Check | Method | Good Result |
+|-------|--------|-------------|
+| Firewall (Domain) | `Get-NetFirewallProfile` | ✅ ON |
+| Firewall (Private) | `Get-NetFirewallProfile` | ✅ ON |
+| Firewall (Public) | `Get-NetFirewallProfile` | ✅ ON |
+| RDP Status | `HKLM:\System\CurrentControlSet\...fDenyTSConnections` | ✅ Disabled |
+
+---
+
+
+
+---
+
+## ▶️ Usage
+
+```powershell
+# Run as Administrator for full firewall + registry access
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\NetworkAudit.ps1
+```
+
+The script is fully self-contained — no arguments needed. It auto-detects the local IP and derives the scan range automatically.
+
+---
+
+## 🧠 Key Technical Decisions
+
+| Design Choice | Why |
+|---------------|-----|
+| `System.Net.NetworkInformation.Ping` over `Test-Connection` | Faster, no hanging, precise 1s timeout control |
+| Dynamic subnet extraction via `.LastIndexOf('.')` | No hardcoded IPs — works on any `/24` network |
+| Registry query for RDP state | More reliable than WMI for detecting actual RDP policy |
+| Colour-coded terminal output | Instant visual triage — no parsing required |
+
+---
+
+## 📊 Sample Output
+
+```
+======================================
+        NETWORK SECURITY SCAN
+======================================
+Wi-Fi IP: 192.168.10.153
+Scanning: 192.168.10.1 to 192.168.10.20
+Each IP takes 1 second max...
+
+Checking 192.168.10.1...  UP!
+Checking 192.168.10.2...  down
+...
+Checking 192.168.10.20... down
+
+Found 1 active host(s)
+
+--- YOUR MACHINE ---
+Firewall [Domain]:  ON
+Firewall [Private]: ON
+Firewall [Public]:  ON
+RDP: Disabled (Good)
+
+======================================
+           SCAN COMPLETE
+======================================
+```
+
+---
+
+## 🔗 MITRE ATT&CK® Mapping
+
+| Technique | ID | Defensive Relevance |
+|-----------|-----|-------------------|
+| Network Service Discovery | T1046 | Identifying active hosts on the segment |
+| Remote Desktop Protocol | T1021.001 | Confirming RDP is disabled to block lateral movement |
+| System Firewall Discovery | T1518.001 | Auditing firewall state across all profiles |
+
+---
+
+## 🔄 Part of a Larger Suite
+
+This script sits within the **Network Security** module of a broader PowerShell automation suite:
+
+- 🖥️ **Monitoring & Detection** — `Sterlingmonitor.ps1` + Python GUI (`Sterlingmonitor_gui.py`)
+- 🌐 **Network Security** — `NetworkAudit.ps1` ← *you are here*
+- 🚨 **Threat Response & Forensics** — *(in development)*
+
+---
 
 ## ⚠️ Disclaimer
 
-This tool is intended for **authorised security auditing and defensive monitoring only**. Always obtain explicit written permission before running on any network infrastructure you do not own or administer. Misuse may violate computer fraud and network access laws.
+This tool is intended for **authorised network auditing and defensive security assessments only**. Only run against networks and systems you own or have explicit written permission to test.
 
 ---
 
-## 📜 License
-
-MIT License — see [`LICENSE`](LICENSE) for details.
+*Part of the [VAPT Security Audit](../README.md) portfolio — a structured penetration testing and security automation project.*
