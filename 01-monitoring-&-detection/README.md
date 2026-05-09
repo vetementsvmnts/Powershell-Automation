@@ -1,4 +1,4 @@
-#  Endpoint Monitoring & Threat Detection 
+#  Monitoring & Threat Detection 
 
 This module provides a proactive security layer by auditing system-level processes to identify "Living off the Land" (LotL) threats and unsigned binaries. 
 
